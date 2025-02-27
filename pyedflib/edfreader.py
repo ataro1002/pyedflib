@@ -168,11 +168,12 @@ class EdfReader(CyEdfReader):
 
     def _convert_string(self, s: Union[bytes, str]) -> str:
         if isinstance(s, bytes):
-            return s.decode("latin")
-        elif isinstance(s, str):
-            return s
+            try:
+                return s.decode("utf_8", "strict")  # Prioritize UTF-8
+            except UnicodeDecodeError:
+                return s.decode("latin1", errors="replace")
         else:
-            return s.decode("utf_8", "strict")  # type: ignore
+            return s
 
     def getHeader(self) -> Dict[str, Union[str, datetime]]:
         """
